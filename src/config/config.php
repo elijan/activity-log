@@ -41,7 +41,7 @@ return array(
 	| instead of Laravel's default which is Auth::user().
 	|
 	*/
-	'authMethod' => Auth::account(),
+	'authMethod' => Auth::user(),
 
 	/*
 	|--------------------------------------------------------------------------

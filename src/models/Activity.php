@@ -94,7 +94,7 @@ class Activity extends Eloquent {
 		if ((bool) $this->developer) {
 			return Config::get('activity-log::developerName');
 		} else {
-			$user = $this->user;
+			$user = $this->user->account;
 			if (empty($user))
 				return "Unknown User";
 
@@ -128,10 +128,10 @@ class Activity extends Eloquent {
 	public function getIcon()
 	{
 		$actionIcons = Config::get('activity-log::actionIcons');
-		if (!is_null($this->action) && $this->action == "" || !isset($actionIcons[$this->action]))
+		if (!is_null($this->action) && $this->action == "" || !isset($actionIcons[ucfirst($this->action)]))
 			return $actionIcons['X'];
 
-		return $actionIcons[$this->action];
+		return $actionIcons[ucfirst($this->action)];
 	}
 
 	/**
@@ -142,6 +142,21 @@ class Activity extends Eloquent {
 	public function getIconMarkup()
 	{
 		return '<span class="glyphicon glyphicon-'.$this->getIcon().'" title="'.$this->action.'"></span>';
+	}
+
+
+	public function getObject() {
+
+		if(class_exists($this->content_type)){
+
+			$class = new $this->content_type();
+
+			$activity = $class->find($this->content_id);
+			if(method_exists($activity, 'getActivityName')) {
+				return $class->find($this->content_id)->getActivityName();
+			}
+
+		}
 	}
 
 }

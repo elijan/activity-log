@@ -33,7 +33,8 @@ class Activity extends Eloquent {
 	 */
 	public function user()
 	{
-		return $this->belongsTo(Config::get('auth.model'), 'account_id');
+
+		return $this->belongsTo(get_class(Config::get('activity-log::authMethod')), 'account_id');
 	}
 
 	/**
@@ -52,9 +53,14 @@ class Activity extends Eloquent {
 		if (Config::get('activity-log::autoSetUserId')) {
 			$user = Config::get('activity-log::authMethod');
 			$activity->account_id = isset($user->id)             ? $user->id            : 0;
+			$activity->account_type = get_class(Config::get('activity-log::authMethod'));
+
 		}
-		if (isset($data['userId']))
+		if (isset($data['userId'])) {
+
 			$activity->account_id = $data['userId'];
+			$activity->account_id = $data['account_type'];
+		}
 
 		$activity->content_id   = isset($data['contentId'])   ? $data['contentId']   : 0;
 		$activity->content_type = isset($data['contentType']) ? $data['contentType'] : "";
@@ -94,7 +100,8 @@ class Activity extends Eloquent {
 		if ((bool) $this->developer) {
 			return Config::get('activity-log::developerName');
 		} else {
-			$user = $this->user->account;
+			$user = $this->user;
+
 			if (empty($user))
 				return "Unknown User";
 

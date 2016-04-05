@@ -53,12 +53,7 @@ class Activity extends Eloquent {
 		if (Config::get('activity-log::autoSetUserId')) {
 			$user = Config::get('activity-log::authMethod');
 			$activity->account_id = isset($user->id)             ? $user->id            : 0;
-			if(Config::get('activity-log::authMethod')) {
-				$activity->account_type = get_class(Config::get('activity-log::authMethod'));
-			}else{
-
-				$activity->account_type = "System";
-			}
+			$activity->account_type = Config::get('activity-log::authMethod') ? get_class(Config::get('activity-log::authMethod')): 'System';
 
 		}
 		if (isset($data['userId'])) {

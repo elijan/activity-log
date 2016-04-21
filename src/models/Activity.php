@@ -37,6 +37,13 @@ class Activity extends Eloquent {
 		return $this->belongsTo(get_class(Config::get('activity-log::authMethod')), 'account_id');
 	}
 
+
+	public function account()
+	{
+
+		return $this->belongsTo($this->attributes['account_type'], 'account_id');
+	}
+
 	/**
 	 * Create an activity log entry.
 	 *
@@ -107,7 +114,7 @@ class Activity extends Eloquent {
 		if ((bool) $this->developer) {
 			return Config::get('activity-log::developerName');
 		} else {
-			$user = $this->user;
+			$user = $this->account;
 
 			if (empty($user))
 				return "Unknown User";
